@@ -9,13 +9,14 @@ IMAGE_GLOB=*.vmdk *.vdi
 # VERSION always includes platform suffix, defaulting to -amd64 if not present
 VERSION=$(shell echo $(IMAGE) | sed -rn 's/.*chr-(.+)\.(vmdk|vdi)/\1/p' | sed -r 's/$$/-amd64/' | sed -r 's/-arm64-amd64$$/-arm64/')
 
-# Detect target platform from image filename
-# arm64 images have -arm64 in the filename, otherwise assume amd64
-DOCKER_PLATFORM=$(shell if echo "$(VERSION)" | grep -q '\-arm64'; then echo "linux/arm64"; else echo "linux/amd64"; fi)
-
 # Detect host platform
 HOST_ARCH=$(shell uname -m)
 HOST_PLATFORM=$(shell if [ "$(HOST_ARCH)" = "aarch64" ] || [ "$(HOST_ARCH)" = "arm64" ]; then echo "arm64"; else echo "amd64"; fi)
+
+# Build the *container* for the host platform, regardless of the guest RouterOS
+# image arch.
+# The VERSION suffix still denotes the *guest* arch.
+DOCKER_PLATFORM=linux/$(HOST_PLATFORM)
 
 # Extract base version without platform suffix for default tag
 VERSION_BASE=$(shell echo "$(VERSION)" | sed -r 's/-(amd64|arm64)$$//')
