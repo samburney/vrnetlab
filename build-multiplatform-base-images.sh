@@ -14,7 +14,8 @@ FINAL_IMAGE="ghcr.io/srl-labs/vrnetlab-base:${VERSION}"
 REGISTRY_NAME="vrnetlab-base-registry"
 NETWORK_NAME="vrnetlab-build-net"
 BUILDER_NAME="vrnetlab-base-builder"
-BUILDKIT_CONFIG=$(mktemp /tmp/buildkitd-XXXXXX.toml)
+BUILDKIT_TMP_PATH=${BUILDKIT_TMP_PATH:-"/tmp"}
+BUILDKIT_CONFIG=$(mktemp "${BUILDKIT_TMP_PATH}/buildkitd-XXXXXX.toml")
 
 cat > "${BUILDKIT_CONFIG}" << EOF
 [registry."${REGISTRY_NAME}:5000"]
